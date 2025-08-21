@@ -162,7 +162,7 @@ header p {
 
 .selected-section {
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
     gap: 20px;
 }
 
@@ -195,6 +195,7 @@ header p {
 .selected-list {
     list-style: none;
     padding: 0;
+    flex-direction: column-reverse;
 }
 
 .selected-item {
@@ -344,4 +345,39 @@ footer {
 .instructions li::before {
     content: "•";
     color: var(--success);
+}
+
+.favorites {
+    padding: 20px;
+    /* background: var(--light); */
+    /* border-top: 1px solid var(--border); */
+}
+
+.favorites h2 {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    /* color: var(--primary); */
+}
+
+.favorites-list, #favorites-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.favorite-item {
+    background: var(--primary);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 0.9em;
+}
+
+.favorite-item:hover {
+    background: var(--secondary);
 }

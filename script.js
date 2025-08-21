@@ -103,6 +103,31 @@ function addToSelected(term) {
     exportBtn.disabled = false;
 }
 
+// Example frequent terms
+const favoriteTerms = [
+  { id: "HP:0001263", name: "Global developmental delay" },
+  { id: "HP:0000252", name: "Microcephaly" },
+  { id: "HP:0001250", name: "Seizure" },
+  { id: "HP:0000107", name: "Renal cyst" },
+  { id: "HP:0000083", name: "Renal insufficiency" },
+  { id: "HP:0000789", name: "Infertility" },
+  { id: "HP:0000027", name: "Azoospermia" },
+  { id: "HP:0034241", name: "Prenatal death" }
+];
+
+// Render favorites in the panel
+function renderFavorites() {
+    const favoritesList = document.getElementById("favorites-list");
+    favoritesList.innerHTML = "";
+    favoriteTerms.forEach(term => {
+        const li = document.createElement("li");
+        li.className = "favorite-item";
+        li.textContent = `${term.name} (${term.id})`;
+        li.onclick = () => addToSelected(term);
+        favoritesList.appendChild(li);
+    });
+}
+
 // Render selected terms list
 function renderSelectedList() {
     selectedList.innerHTML = '';
@@ -217,3 +242,4 @@ function showError() {
 
 // Initialize
 showEmptyState();
+renderFavorites();

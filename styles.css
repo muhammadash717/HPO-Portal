@@ -524,7 +524,7 @@ button, .btn, .remove-btn {
     gap:3px;
     margin-top:6px;
     overflow-y: scroll;
-    max-height: 100px;
+    max-height: 200px;
 }
 
 .gene-chip {
@@ -538,7 +538,7 @@ button, .btn, .remove-btn {
 .modal-synonyms {
     font-size: 0.8rem;
     overflow-y: scroll;
-    max-height: 100px;
+    max-height: 200px;
 }
 /* Responsive adjustments */
 @media (max-width: 480px) {

@@ -119,7 +119,6 @@ header p {
 
 .results-list {
     list-style: none;
-    padding: 0;
 }
 
 .result-item {
@@ -519,7 +518,28 @@ button, .btn, .remove-btn {
     min-width: 44px;
 }
 
+.modal-genes {
+    display:flex;
+    flex-wrap:wrap;
+    gap:3px;
+    margin-top:6px;
+    overflow-y: scroll;
+    max-height: 100px;
+}
 
+.gene-chip {
+    background: rgba(67,97,238,0.09);
+    color: var(--primary);
+    padding:3px 5px;
+    border-radius:8px;
+    font-size:0.8rem;
+}
+
+.modal-synonyms {
+    font-size: 0.8rem;
+    overflow-y: scroll;
+    max-height: 100px;
+}
 /* Responsive adjustments */
 @media (max-width: 480px) {
     body {

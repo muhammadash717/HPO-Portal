@@ -13,6 +13,8 @@ const modalTermId = document.getElementById('modalTermId');
 const modalTermDefinition = document.getElementById('modalTermDefinition');
 const modalTermSynonyms = document.getElementById('modalTermSynonyms');
 const addFromModalBtn = document.getElementById('addFromModal');
+const modalGenes = document.getElementById('modalGenes');
+const modalDiseases = document.getElementById('modalDiseases');
 
 // State
 let selectedTerms = [];
@@ -82,6 +84,27 @@ async function searchHPO(query) {
     }
 }
 
+// Fetch JAX annotations (genes + diseases) for a given HP ID
+async function fetchJaxAnnotation(hpId) {
+  const url = `https://ontology.jax.org/api/network/annotation/${encodeURIComponent(hpId)}`;
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) {
+      // 404 or other non-ok -> return empty lists
+      return { genes: [], diseases: [] };
+    }
+    const data = await resp.json();
+    const genes = Array.isArray(data.genes) ? data.genes.map(g => g.name).filter(Boolean) : [];
+    const diseases = Array.isArray(data.diseases)
+      ? data.diseases.map(d => `${d.name} (${d.id})`).filter(Boolean)
+      : [];
+    return { genes, diseases };
+  } catch (err) {
+    console.warn('JAX annotation fetch failed for', hpId, err);
+    return { genes: [], diseases: [] };
+  }
+}
+
 // Display search results
 function displayResults(terms) {
     resultsList.innerHTML = '';
@@ -92,7 +115,7 @@ function displayResults(terms) {
         li.className = 'result-item';
         li.innerHTML = `
             <div class="result-content">
-                <span class="term-name">${term.name}</span>
+                <span class="term-name">${term.name} - </span>
                 <span class="hpo-id">${term.id}</span>
             </div>
             <div class="term-actions">
@@ -120,7 +143,6 @@ function displayResults(terms) {
     });
 }
 
-
 // Show term details in modal
 function showTermDetails(term) {
     currentTerm = term;
@@ -132,8 +154,13 @@ function showTermDetails(term) {
     modalTermSynonyms.innerHTML = '';
     
     if (term.synonyms) {
-        // Synonyms come as a single string separated by semicolons
-        const synonymsArray = term.synonyms.split('; ').map(s => s.trim()).filter(s => s);
+        // Synonyms may be a single string separated by semicolons OR an array
+        let synonymsArray = [];
+        if (typeof term.synonyms === 'string') {
+            synonymsArray = term.synonyms.split('; ').map(s => s.trim()).filter(s => s);
+        } else if (Array.isArray(term.synonyms)) {
+            synonymsArray = term.synonyms.map(String).map(s => s.trim()).filter(s => s);
+        }
         
         if (synonymsArray.length > 0) {
             synonymsArray.forEach(synonym => {
@@ -148,8 +175,55 @@ function showTermDetails(term) {
         modalTermSynonyms.innerHTML = '<li>No synonyms available</li>';
     }
     
+    // prepare genes/diseases placeholders (show loading text)
+    if (modalGenes) modalGenes.innerHTML = '<em>Loading associated genes...</em>';
+    if (modalDiseases) modalDiseases.innerHTML = '<li><em>Loading associated diseases...</em></li>';
+
+    // show modal (same as before)
     modal.style.display = 'block';
+
+    // fetch JAX annotations only for this term (do not change other behavior)
+    if (term.id) {
+        fetchJaxAnnotation(term.id).then(({ genes, diseases }) => {
+            // populate genes
+            if (modalGenes) {
+                modalGenes.innerHTML = '';
+                if (genes.length > 0) {
+                    genes.forEach(gname => {
+                        const span = document.createElement('span');
+                        span.className = 'gene-chip';
+                        span.textContent = gname;
+                        modalGenes.appendChild(span);
+                    });
+                } else {
+                    modalGenes.innerHTML = '<em>No associated genes found.</em>';
+                }
+            }
+
+            // populate diseases
+            if (modalDiseases) {
+                modalDiseases.innerHTML = '';
+                if (diseases.length > 0) {
+                    diseases.forEach(d => {
+                        const li = document.createElement('li');
+                        li.textContent = d;
+                        modalDiseases.appendChild(li);
+                    });
+                } else {
+                    modalDiseases.innerHTML = '<li>No associated diseases found</li>';
+                }
+            }
+        }).catch(err => {
+            if (modalGenes) modalGenes.innerHTML = '<em>Unable to load genes.</em>';
+            if (modalDiseases) modalDiseases.innerHTML = '<li><em>Unable to load diseases.</em></li>';
+            console.warn('Error fetching JAX annotations:', err);
+        });
+    } else {
+        if (modalGenes) modalGenes.innerHTML = '<em>No HP ID available.</em>';
+        if (modalDiseases) modalDiseases.innerHTML = '<li><em>No HP ID available.</em></li>';
+    }
 }
+
 
 // Add term from modal
 function addCurrentTermFromModal() {

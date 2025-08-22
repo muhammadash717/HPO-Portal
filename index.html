@@ -3,40 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HPO Term Search & Export</title>
+    <title>HPO Portal - Human Phenotype Ontology Search Tool</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-dna"></i> HPO Term Search & Export</h1>
-            <p>Search the Human Phenotype Ontology database, select terms, and export them to a text file for your research</p>
+            <h1><i class="fas fa-dna"></i> HPO Portal</h1><br>
+            <p>Search tool for the Human Phenotype Ontology (HPO) database.</p>
         </header>
 
         <div class="instructions">
-            <h3><i class="fas fa-info-circle"></i> How to Use This Tool</h3>
+            <h3><i class="fas fa-info-circle"></i> How to Use This Tool ?</h3>
             <ul>
-                <li>Start typing in the search box to find HPO terms</li>
-                <li>Click on a term to add it to your selection</li>
-                <li>Remove terms using the trash icon</li>
-                <li>Export your selection as a text file</li>
-                <li>All data is fetched in real-time from the HPO database</li>
+                <li>Start typing in the search box to find HPO terms.</li>
+                <li><strong>Click</strong>on the <i class="fas fa-info-circle"></i> icon to get more information.</li>
+                <li><strong>Click</strong>on a term to add it to your selection.</li>
+                <li>Remove terms using the trash icon.</li>
+                <li>Export your selection as a text file.</li>
+                <li>All data is fetched in real-time from the HPO database.</li>
             </ul>
         </div>
 
-        <div class="instructions" style="margin-bottom: 5px;">
-        <section class="favorites">
+        <div class="favorites">
             <h2>Frequently Used Terms</h2>
-            <b><ul id="favorites-list"></ul></b>
-        </section>
+            <ul id="favorites-list"></ul>
+        </div>
+
+        <!-- Term Details Modal -->
+        <div id="termModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>HPO Term Details</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="term-info">
+                        <h3 id="modalTermName"></h3>
+                        <div class="term-id" id="modalTermId"></div>
+                        
+                        <div class="info-section">
+                            <h4>Definition</h4>
+                            <p id="modalTermDefinition">No definition available</p>
+                        </div>
+                        
+                        <div class="info-section">
+                            <h4>Synonyms</h4>
+                            <ul id="modalTermSynonyms"></ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="addFromModal" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add to Selection
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="app-card">
             <div class="app-body">
                 <div class="search-section">
                     <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Search HPO terms (e.g., 'abnormality', 'cardiovascular')">
+                        <input type="text" id="searchInput" placeholder="Search HPO terms (e.g., 'Arachnodactyly', 'Cardiomyopathy')">
                         <i class="fas fa-search search-icon"></i>
                     </div>
 
@@ -56,7 +86,7 @@
                 
                 <div class="selected-section">
                     <div class="selected-header">
-                        <h3>Selected Terms</h3>
+                        <h3>Selected HPO Terms</h3>
                         <span class="count-badge" id="selectedCount">0 terms</span>
                     </div>
                     <div class="selected-container">
@@ -82,8 +112,11 @@
         </div>
         
         <footer>
-            <p>Human Phenotype Ontology (HPO) Search Tool | Data from HPO Database</p>
-            <p>Made with <i class="fa fa-heart" aria-hidden="true"></i> by Muhammad Ashraf</p>
+            <p>
+                HPO Portal - Human Phenotype Ontology Search Tool |
+                Made with <i class="fa fa-heartbeat" aria-hidden="true"></i> by Muhammad Ashraf |
+                GitHub Repo: <a href="https://github.com/muhammadash717/HPO-Search-App" style="color: white;">muhammadash717/HPO-Search-App</a>
+            </p>
         </footer>
     </div>
     <script src="script.js"></script>

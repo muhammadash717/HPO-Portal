@@ -100,8 +100,8 @@ header p {
 .results-container {
     border: 2px solid var(--border);
     border-radius: 10px;
-    max-height: 50vh;
-    overflow-y: auto;
+    max-height: 25vh;
+    overflow-y: scroll;
     background: white;
     flex-grow: 1;
 }
@@ -183,7 +183,8 @@ header p {
 .selected-list {
     list-style: none;
     padding: 0;
-    flex-direction: column-reverse;
+    max-height: 25vh;
+    overflow-y: scroll;
 }
 
 .selected-item {
@@ -428,6 +429,8 @@ footer {
 .term-info h3 {
     color: var(--dark);
     margin-bottom: 5px;
+    margin-right: 10px;
+    float: left;
 }
 
 .term-id {
@@ -523,8 +526,8 @@ button, .btn, .remove-btn {
     flex-wrap:wrap;
     gap:3px;
     margin-top:6px;
-    overflow-y: scroll;
-    max-height: 200px;
+    overflow-y: auto;
+    max-height: 100px;
 }
 
 .gene-chip {
@@ -535,11 +538,16 @@ button, .btn, .remove-btn {
     font-size:0.8rem;
 }
 
-.modal-synonyms {
-    font-size: 0.8rem;
-    overflow-y: scroll;
-    max-height: 200px;
+.modal-definition, .modal-synonyms, .modal-parents, .modal-children, .modal-diseases {
+    font-size: 0.9rem;
+    max-height: 100px;
+    overflow-y: auto;
 }
+
+.modal-diseases {
+    overflow-y: auto;
+}
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
     body {
@@ -583,8 +591,7 @@ button, .btn, .remove-btn {
         font-size: 0.9rem;
     }
 
-    .modal-text,
-    .modal-synonyms {
+    .modal-text {
         font-size: 0.9rem;
     }
     

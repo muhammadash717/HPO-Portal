@@ -15,6 +15,8 @@ const modalTermSynonyms = document.getElementById('modalTermSynonyms');
 const addFromModalBtn = document.getElementById('addFromModal');
 const modalGenes = document.getElementById('modalGenes');
 const modalDiseases = document.getElementById('modalDiseases');
+const modalParents = document.getElementById('modalParents');
+const modalChildren = document.getElementById('modalChildren');
 
 // State
 let selectedTerms = [];
@@ -71,7 +73,7 @@ async function searchHPO(query) {
             const terms = results_list.map(termData => ({
                 id: termData[0] || '',
                 name: termData[1] || '',
-                definition: termData[2] || 'No definition available',
+                definition: termData[2] || '',
                 synonyms: termData[3] || ''
             }));
             displayResults(terms);
@@ -84,25 +86,69 @@ async function searchHPO(query) {
     }
 }
 
-// Fetch JAX annotations (genes + diseases) for a given HP ID
-async function fetchJaxAnnotation(hpId) {
-  const url = `https://ontology.jax.org/api/network/annotation/${encodeURIComponent(hpId)}`;
+// Fetch JAX annotations (definition + synonyms) for a given HP ID
+async function fetchDefinition(hpId) {
+  const url_def = `https://ontology.jax.org/api/hp/terms/${encodeURIComponent(hpId)}`;
   try {
-    const resp = await fetch(url);
-    if (!resp.ok) {
-      // 404 or other non-ok -> return empty lists
-      return { genes: [], diseases: [] };
+    const resp_def = await fetch(url_def);
+    if (resp_def.ok) {
+        const data_def = await resp_def.json();
+        const definition = data_def.definition;
+        return definition
     }
-    const data = await resp.json();
-    const genes = Array.isArray(data.genes) ? data.genes.map(g => g.name).filter(Boolean) : [];
-    const diseases = Array.isArray(data.diseases)
-      ? data.diseases.map(d => `${d.name} (${d.id})`).filter(Boolean)
-      : [];
-    return { genes, diseases };
   } catch (err) {
     console.warn('JAX annotation fetch failed for', hpId, err);
-    return { genes: [], diseases: [] };
-  }
+    return NaN
+  };
+}
+
+async function fetchSynonyms(hpId) {
+  const url_def = `https://ontology.jax.org/api/hp/terms/${encodeURIComponent(hpId)}`;
+  try {
+    const resp_def = await fetch(url_def);
+    if (resp_def.ok) {
+        const data_def = await resp_def.json();
+        const synonyms = data_def.synonyms;
+        return synonyms
+    }
+  } catch (err) {
+    console.warn('JAX annotation fetch failed for', hpId, err);
+    return NaN
+  };
+}
+
+// Fetch JAX annotations (genes + diseases) for a given HP ID
+async function fetchJaxAnnotations(hpId) {
+  const url = `https://ontology.jax.org/api/network/annotation/${encodeURIComponent(hpId)}`;
+  const url_def = `https://ontology.jax.org/api/hp/terms/${encodeURIComponent(hpId)}`;
+  const url_parents = `https://ontology.jax.org/api/hp/terms/${encodeURIComponent(hpId)}/parents`;
+  const url_children = `https://ontology.jax.org/api/hp/terms/${encodeURIComponent(hpId)}/children`;
+
+  try {
+    const resp = await fetch(url);
+    const resp_def = await fetch(url_def);
+    const resp_parents = await fetch(url_parents);
+    const resp_children = await fetch(url_children);
+    
+    if (resp.ok && resp_parents.ok && resp_children.ok) { //&& resp_def.ok 
+        const data = await resp.json();
+        const data_def = await resp_def.json();
+        const data_parents = await resp_parents.json();
+        const data_children = await resp_children.json();
+
+        const definition = data_def.definition || 'no def!';
+        const synonyms = Array.isArray(data_def.synonyms) ? data_def.synonyms.map(g => g).filter(Boolean) : [];
+        const genes = Array.isArray(data.genes) ? data.genes.map(g => g.name).filter(Boolean) : [];
+        const diseases = Array.isArray(data.diseases) ? data.diseases.map(d => `${d.name} (${d.id})`).filter(Boolean) : [];
+        const parents = Array.isArray(data_parents) ? data_parents.map(d => ({ name: d.name, id: d.id })) : [];
+        const children = Array.isArray(data_children) ? data_children.map(d => ({ name: d.name, id: d.id })) : [];
+
+        return { definition, synonyms, genes, diseases, parents, children }
+    }
+  } catch (err) {
+    console.warn('JAX annotation fetch failed for', hpId, err);
+    return { definition: [], synonyms: [], genes: [], diseases: [], parents: [], children: [] }
+  };
 }
 
 // Display search results
@@ -144,11 +190,19 @@ function displayResults(terms) {
 }
 
 // Show term details in modal
-function showTermDetails(term) {
+async function showTermDetails(term) {
     currentTerm = term;
-    modalTermName.textContent = term.name || 'No name available';
-    modalTermId.textContent = term.id || 'No ID available';
-    modalTermDefinition.textContent = term.definition || 'No definition available';
+    modalTermName.textContent = term.name || 'No name available.';
+    modalTermId.textContent = term.id || 'No ID available.';
+
+    if (term.definition) {
+        modalTermDefinition.textContent = term.definition || 'fail 1';
+    } else {
+        const definition = await fetchDefinition(term.id);
+        modalTermDefinition.textContent = definition;
+        const synonyms2 = await fetchSynonyms(term.id);
+        term.synonyms = synonyms2;
+    }
     
     // Clear and populate synonyms
     modalTermSynonyms.innerHTML = '';
@@ -169,13 +223,15 @@ function showTermDetails(term) {
                 modalTermSynonyms.appendChild(li);
             });
         } else {
-            modalTermSynonyms.innerHTML = '<li>No synonyms available</li>';
+            modalTermSynonyms.innerHTML = '<li>No synonyms available.</li>';
         }
     } else {
-        modalTermSynonyms.innerHTML = '<li>No synonyms available</li>';
+        modalTermSynonyms.innerHTML = '<li>No synonyms available.</li>';
     }
     
     // prepare genes/diseases placeholders (show loading text)
+    if (modalParents) modalParents.innerHTML = '<em>Loading parent terms...</em>';
+    if (modalChildren) modalChildren.innerHTML = '<em>Loading child terms...</em>';
     if (modalGenes) modalGenes.innerHTML = '<em>Loading associated genes...</em>';
     if (modalDiseases) modalDiseases.innerHTML = '<li><em>Loading associated diseases...</em></li>';
 
@@ -184,7 +240,81 @@ function showTermDetails(term) {
 
     // fetch JAX annotations only for this term (do not change other behavior)
     if (term.id) {
-        fetchJaxAnnotation(term.id).then(({ genes, diseases }) => {
+        fetchJaxAnnotations(term.id).then(({ genes, diseases, parents, children }) => {
+            // populate parents
+            if (modalParents) {
+                modalParents.innerHTML = '';
+                if (parents.length > 0) {
+                    parents.forEach(d => {
+                        const li = document.createElement('li');
+
+                        // main sentence
+                        const textSpan = document.createElement('span');
+                        textSpan.textContent = `${d.name} (${d.id})`;
+
+                        // "info" action
+                        const infoSpan = document.createElement('span');
+                        infoSpan.style.cursor = 'pointer';
+                        infoSpan.style.marginLeft = '10px';
+                        infoSpan.innerHTML = '<i class="fa fa-info-circle" aria-hidden="true"></i>';
+                        infoSpan.addEventListener('click', () => showTermDetails(d));
+
+                        // "add" action
+                        const addSpan = document.createElement('span');
+                        addSpan.style.cursor = 'pointer';
+                        addSpan.style.marginLeft = '10px';
+                        addSpan.innerHTML = '<i class="fa fa-plus-circle" aria-hidden="true"></i>';
+                        addSpan.addEventListener('click', () => addToSelected(d));
+
+                        // build li
+                        li.appendChild(textSpan);
+                        li.appendChild(infoSpan);
+                        li.appendChild(addSpan);
+
+                        modalParents.appendChild(li);
+                    });
+                } else {
+                    modalParents.innerHTML = '<li>No associated parent terms found</li>';
+                }
+            }
+
+            // populate children
+            if (modalChildren) {
+                modalChildren.innerHTML = '';
+                if (children.length > 0) {
+                    children.forEach(d => {
+                        const li = document.createElement('li');
+
+                        // main sentence
+                        const textSpan = document.createElement('span');
+                        textSpan.textContent = `${d.name} (${d.id})`;
+
+                        // "info" action
+                        const infoSpan = document.createElement('span');
+                        infoSpan.style.cursor = 'pointer';
+                        infoSpan.style.marginLeft = '10px';
+                        infoSpan.innerHTML = '<i class="fa fa-info-circle" aria-hidden="true"></i>';
+                        infoSpan.addEventListener('click', () => showTermDetails(d));
+
+                        // "add" action
+                        const addSpan = document.createElement('span');
+                        addSpan.style.cursor = 'pointer';
+                        addSpan.style.marginLeft = '10px';
+                        addSpan.innerHTML = '<i class="fa fa-plus-circle" aria-hidden="true"></i>';
+                        addSpan.addEventListener('click', () => addToSelected(d));
+
+                        // build li
+                        li.appendChild(textSpan);
+                        li.appendChild(infoSpan);
+                        li.appendChild(addSpan);
+
+                        modalChildren.appendChild(li);
+                    });
+                } else {
+                    modalChildren.innerHTML = '<li>No associated child terms found</li>';
+                }
+            }
+
             // populate genes
             if (modalGenes) {
                 modalGenes.innerHTML = '';
@@ -331,8 +461,8 @@ function exportToTxt() {
     if (selectedTerms.length === 0) return;
     
     let content = '';
-    selectedTerms.forEach(term => {
-        content += `${term.name} (${term.id})\n`;
+    selectedTerms.forEach((term, index) => {
+        content += `${index + 1}. ${term.name} (${term.id})\n`;
     });
     
     const blob = new Blob([content], { type: 'text/plain' });

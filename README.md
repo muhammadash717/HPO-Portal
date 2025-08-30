@@ -2,7 +2,7 @@
 
 A modern web application for searching and managing Human Phenotype Ontology (HPO) terms with detailed information and export capabilities.
 
-🌐 **Live Demo (Netlify):** [https://hpo-search.netlify.app](https://hpo-search.netlify.app)  
+🌐 **Live Demo (Netlify):** [https://hpo-portal.netlify.app](https://hpo-portal.netlify.app)  
 
 ## Features
 

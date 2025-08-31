@@ -1,3 +1,17 @@
+// =============================================
+// HPO Portal - Human Phenotype Ontology Search Tool
+// JavaScript Implementation
+// 
+// This script provides functionality for:
+// - Searching HPO terms via API
+// - Managing selected terms
+// - Displaying term details in a modal
+// - Exporting selected terms to a text file
+// 
+// Author : Muhammad Ashraf
+// Date   : August 2025
+// =============================================
+ 
 // DOM Elements
 const searchInput = document.getElementById('searchInput');
 const resultsList = document.getElementById('resultsList');
@@ -37,7 +51,7 @@ window.addEventListener('click', (event) => {
     }
 });
 
-// Search Handler
+// Search Handler - Processes user input with debouncing
 function handleSearch() {
     const query = searchInput.value.trim();
     
@@ -102,6 +116,7 @@ async function fetchDefinition(hpId) {
   };
 }
 
+// Fetch synonyms for a specific HPO term from JAX API
 async function fetchSynonyms(hpId) {
   const url_def = `https://ontology.jax.org/api/hp/terms/${encodeURIComponent(hpId)}`;
   try {
@@ -117,7 +132,7 @@ async function fetchSynonyms(hpId) {
   };
 }
 
-// Fetch JAX annotations (genes + diseases) for a given HP ID
+// Fetch comprehensive annotations for a specific HPO term
 async function fetchJaxAnnotations(hpId) {
   const url = `https://ontology.jax.org/api/network/annotation/${encodeURIComponent(hpId)}`;
   const url_def = `https://ontology.jax.org/api/hp/terms/${encodeURIComponent(hpId)}`;
@@ -125,6 +140,7 @@ async function fetchJaxAnnotations(hpId) {
   const url_children = `https://ontology.jax.org/api/hp/terms/${encodeURIComponent(hpId)}/children`;
 
   try {
+    // Fetch all related data in parallel
     const resp = await fetch(url);
     const resp_def = await fetch(url_def);
     const resp_parents = await fetch(url_parents);
@@ -136,6 +152,7 @@ async function fetchJaxAnnotations(hpId) {
         const data_parents = await resp_parents.json();
         const data_children = await resp_children.json();
 
+        // Extract and format data from responses
         const definition = data_def.definition || 'no def!';
         const synonyms = Array.isArray(data_def.synonyms) ? data_def.synonyms.map(g => g).filter(Boolean) : [];
         const genes = Array.isArray(data.genes) ? data.genes.map(g => g.name).filter(Boolean) : [];
@@ -156,6 +173,7 @@ function displayResults(terms) {
     resultsList.innerHTML = '';
     resultsCount.textContent = `${terms.length} terms found`;
     
+    // Create and append result items for each term
     terms.forEach(term => {
         const li = document.createElement('li');
         li.className = 'result-item';
@@ -195,6 +213,7 @@ async function showTermDetails(term) {
     modalTermName.textContent = term.name || 'No name available.';
     modalTermId.textContent = term.id || 'No ID available.';
 
+    // Fetch definition and synonyms if not already available
     if (term.definition) {
         modalTermDefinition.textContent = term.definition || 'fail 1';
     } else {
@@ -229,13 +248,13 @@ async function showTermDetails(term) {
         modalTermSynonyms.innerHTML = '<li>No synonyms available.</li>';
     }
     
-    // prepare genes/diseases placeholders (show loading text)
+    // Prepare placeholders for related data
     if (modalParents) modalParents.innerHTML = '<em>Loading parent terms...</em>';
     if (modalChildren) modalChildren.innerHTML = '<em>Loading child terms...</em>';
     if (modalGenes) modalGenes.innerHTML = '<em>Loading associated genes...</em>';
     if (modalDiseases) modalDiseases.innerHTML = '<li><em>Loading associated diseases...</em></li>';
 
-    // show modal (same as before)
+    // Show modal
     modal.style.display = 'block';
 
     // fetch JAX annotations only for this term (do not change other behavior)
@@ -354,7 +373,6 @@ async function showTermDetails(term) {
     }
 }
 
-
 // Add term from modal
 function addCurrentTermFromModal() {
     if (currentTerm) {
@@ -408,6 +426,7 @@ function renderSelectedList() {
     selectedList.innerHTML = '';
     selectedCount.textContent = `${selectedTerms.length} terms`;
     
+    // Show empty state if no terms selected
     if (selectedTerms.length === 0) {
         selectedList.innerHTML = `
             <li class="empty-state">
@@ -419,6 +438,7 @@ function renderSelectedList() {
         return;
     }
     
+    // Create list items for each selected term
     selectedTerms.forEach(term => {
         const li = document.createElement('li');
         li.className = 'selected-item';
@@ -432,6 +452,7 @@ function renderSelectedList() {
             </button>
         `;
         
+        // Add event listener for remove button
         const removeBtn = li.querySelector('.remove-btn');
         removeBtn.addEventListener('click', () => removeTerm(term.id));
         
@@ -444,6 +465,7 @@ function removeTerm(id) {
     selectedTerms = selectedTerms.filter(term => term.id !== id);
     renderSelectedList();
     
+    // Disable export button if no terms selected
     if (selectedTerms.length === 0) {
         exportBtn.disabled = true;
     }
@@ -460,11 +482,13 @@ function clearAll() {
 function exportToTxt() {
     if (selectedTerms.length === 0) return;
     
+    // Create content for text file
     let content = '';
     selectedTerms.forEach((term, index) => {
         content += `${index + 1}. ${term.name} (${term.id})\n`;
     });
     
+    // Create and trigger download
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     

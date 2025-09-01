@@ -485,7 +485,7 @@ function exportToTxt() {
     // Create content for text file
     let content = '';
     selectedTerms.forEach((term, index) => {
-        content += `${index + 1}. ${term.name} (${term.id})\n`;
+        content += `${term.name}\t${term.id}\n`;
     });
     
     // Create and trigger download

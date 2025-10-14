@@ -1,177 +1,221 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Basic meta tags for character set and responsive design -->
+    <!--
+        HPO Portal - Human Phenotype Ontology Search Tool
+        Enhanced HTML Structure with Semantic Markup and Accessibility Features
+        
+        @author Muhammad Ashraf
+        @version 1.1
+        @license MIT
+    -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Page title that appears in browser tab -->
+    <meta name="description" content="Search tool for the Human Phenotype Ontology (HPO) database">
+    <meta name="author" content="Muhammad Ashraf">
+    
     <title>HPO Portal - Human Phenotype Ontology Search Tool</title>
-
-    <!-- External resources: Font Awesome for icons and custom stylesheet -->
+    
+    <!-- External Dependencies -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Main container wrapping all content -->
+    <!-- 
+        MAIN APPLICATION CONTAINER
+        Contains all application components in a centered, responsive layout
+    -->
     <div class="container">
- 
-         <!-- Header section with title and description -->
-       <header>
-            <h1><i class="fas fa-dna"></i> HPO Portal</h1><br>
+        <!-- 
+            APPLICATION HEADER
+            Contains title and brief description of the tool
+        -->
+        <header role="banner">
+            <h1><i class="fas fa-dna" aria-hidden="true"></i> HPO Portal</h1>
             <p>Search tool for the Human Phenotype Ontology (HPO) database.</p>
         </header>
 
-        <!-- Instructions section explaining how to use the tool -->
-        <div class="instructions">
-            <h3><i class="fas fa-info-circle"></i> How to Use This Tool ?</h3>
+        <!-- 
+            USER INSTRUCTIONS SECTION
+            Provides clear guidance on how to use the application
+        -->
+        <section class="instructions" aria-labelledby="instructions-heading">
+            <h3 id="instructions-heading"><i class="fas fa-info-circle" aria-hidden="true"></i> How to Use This Tool</h3>
             <ul>
                 <li>Start typing in the search box to find HPO terms.</li>
-                <li><strong>Click</strong>on the <i class="fas fa-info-circle"></i> icon to get more information.</li>
-                <li><strong>Click</strong>on a term to add it to your selection.</li>
+                <li><strong>Click</strong> on the <i class="fas fa-info-circle" aria-hidden="true"></i> icon to get more information.</li>
+                <li><strong>Click</strong> on a term to add it to your selection.</li>
                 <li>Remove terms using the trash icon.</li>
                 <li>Export your selection as a text file.</li>
                 <li>All data is fetched in real-time from the HPO database.</li>
             </ul>
-        </div>
+        </section>
 
-        <!-- Frequently used terms section -->
-        <div class="favorites">
-            <h2>Frequently Used Terms</h2>
-            <ul id="favorites-list"></ul>
-        </div>
+        <!-- 
+            FREQUENTLY USED TERMS SECTION
+            Quick access to commonly searched HPO terms
+        -->
+        <section class="favorites" aria-labelledby="favorites-heading">
+            <h2 id="favorites-heading">Frequently Used Terms</h2>
+            <ul id="favorites-list" role="list"></ul>
+        </section>
 
-        <!-- Modal dialog for displaying detailed term information -->
-        <div id="termModal" class="modal">
+        <!-- 
+            TERM DETAILS MODAL DIALOG
+            Displays comprehensive information about selected HPO terms
+            Hidden by default and shown via JavaScript
+        -->
+        <div id="termModal" class="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
             <div class="modal-content">
-                <!-- Modal header with title and close button -->
+                <!-- Modal Header -->
                 <div class="modal-header">
-                    <h2>HPO Term Details</h2>
-                    <span class="close">&times;</span>
+                    <h2 id="modal-title">HPO Term Details</h2>
+                    <button class="close" aria-label="Close modal">&times;</button>
                 </div>
-
-                <!-- Modal body containing term information sections -->
+                
+                <!-- Modal Body - Term Information Sections -->
                 <div class="modal-body">
                     <div class="term-info">
+                        <!-- Basic Term Information -->
                         <h3 id="modalTermName"></h3>
                         <div class="term-id" id="modalTermId"></div>
                         
-                        <!-- Definition section -->
-                        <div class="info-section">
-                            <h4>Definition</h4>
+                        <!-- Definition Section -->
+                        <section class="info-section" aria-labelledby="definition-heading">
+                            <h4 id="definition-heading">Definition</h4>
                             <p id="modalTermDefinition" class="modal-definition">
                                 No definition available.
                             </p>
-                        </div>
+                        </section>
                         
-                        <!-- Synonyms section -->
-                        <div class="info-section">
-                            <h4>Synonyms</h4>
-                            <ul id="modalTermSynonyms" class="modal-synonyms"></ul>
-                        </div>
-
-                        <!-- Parent terms section -->
-                        <div class="info-section">
-                            <h4>Parent Terms</h4>
-                            <ul id="modalParents" class="modal-parents">
+                        <!-- Synonyms Section -->
+                        <section class="info-section" aria-labelledby="synonyms-heading">
+                            <h4 id="synonyms-heading">Synonyms</h4>
+                            <ul id="modalTermSynonyms" class="modal-synonyms" role="list"></ul>
+                        </section>
+                        
+                        <!-- Parent Terms Section -->
+                        <section class="info-section" aria-labelledby="parents-heading">
+                            <h4 id="parents-heading">Parent Terms</h4>
+                            <ul id="modalParents" class="modal-parents" role="list">
                                 <li><em>Loading on demand...</em></li>
                             </ul>
-                        </div>
-
-                        <!-- Child terms section -->
-                        <div class="info-section">
-                            <h4>Child Terms</h4>
-                            <ul id="modalChildren" class="modal-children">
+                        </section>
+                        
+                        <!-- Child Terms Section -->
+                        <section class="info-section" aria-labelledby="children-heading">
+                            <h4 id="children-heading">Child Terms</h4>
+                            <ul id="modalChildren" class="modal-children" role="list">
                                 <li><em>Loading on demand...</em></li>
                             </ul>
-                        </div>
-
-                        <!-- Associated genes section -->
-                        <div class="info-section">
-                            <h4>
+                        </section>
+                        
+                        <!-- Associated Genes Section -->
+                        <section class="info-section" aria-labelledby="genes-heading">
+                            <h4 id="genes-heading">
                                 Associated Genes
-                                <button id="copyGenesBtn" class="copy-btn" title="Copy"><i class="fa-solid fa-clone"></i></button>
+                                <button id="copyGenesBtn" class="copy-btn" title="Copy gene list to clipboard">
+                                    <i class="fa-solid fa-clone" aria-hidden="true"></i>
+                                    <span class="sr-only">Copy gene list</span>
+                                </button>
                             </h4>
                             <div id="modalGenes" class="modal-genes">
                                 <em>Loading on demand...</em>
                             </div>
-                        </div>
-
-                        <!-- Associated diseases section -->
-                        <div class="info-section">
-                            <h4>Associated Diseases</h4>
-                            <ul id="modalDiseases" class="modal-diseases">
+                        </section>
+                        
+                        <!-- Associated Diseases Section -->
+                        <section class="info-section" aria-labelledby="diseases-heading">
+                            <h4 id="diseases-heading">Associated Diseases</h4>
+                            <ul id="modalDiseases" class="modal-diseases" role="list">
                                 <li><em>Loading on demand...</em></li>
                             </ul>
-                        </div>
+                        </section>
                     </div>
                 </div>
-
-                <!-- Modal footer with action button -->
+                
+                <!-- Modal Footer - Action Buttons -->
                 <div class="modal-footer">
                     <button id="addFromModal" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add to Selection
+                        <i class="fas fa-plus" aria-hidden="true"></i> Add to Selection
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Main application card containing search and selection areas -->
-        <div class="app-card">
+        <!-- 
+            MAIN APPLICATION CARD
+            Contains search functionality and term selection management
+        -->
+        <main class="app-card" role="main">
             <div class="app-body">
-                <!-- Search section with input and results -->
-                <div class="search-section">
+                <!-- 
+                    SEARCH SECTION
+                    Contains search input and results display
+                -->
+                <section class="search-section" aria-labelledby="search-results-heading">
                     <div class="search-box">
-                        <input type="text" id="searchInput" placeholder="Search HPO terms (e.g., 'Arachnodactyly', 'Cardiomyopathy')">
-                        <i class="fas fa-search search-icon"></i>
+                        <label for="searchInput" class="sr-only">Search HPO terms</label>
+                        <input type="text" id="searchInput" 
+                               placeholder="Search Phenotypes (Infertility, Kidney, Cardio, ...)"
+                               aria-describedby="search-instructions">
+                        <i class="fas fa-search search-icon" aria-hidden="true"></i>
                     </div>
-
-                    <!-- Search results container -->
+                    
                     <div class="results-container">
                         <div class="results-header">
-                            <span>Search Results</span>
-                            <span id="resultsCount">0 terms found</span>
+                            <span id="search-results-heading">Search Results</span>
+                            <span id="resultsCount" aria-live="polite">0 terms found</span>
                         </div>
-                        <ul class="results-list" id="resultsList">
+                        <ul class="results-list" id="resultsList" role="list">
                             <li class="empty-state">
-                                <i class="fas fa-search"></i>
-                                <p>Start typing to search HPO terms</p>
+                                <i class="fas fa-search" aria-hidden="true"></i>
+                                <p>Start typing to search HPO terms.</p>
                             </li>
                         </ul>
                     </div>
-                </div>
-                
-                <!-- Selected terms section -->
-                <div class="selected-section">
+                </section>
+
+                <!-- 
+                    SELECTION SECTION
+                    Manages and displays selected HPO terms
+                -->
+                <section class="selected-section" aria-labelledby="selected-terms-heading">
                     <div class="selected-header">
-                        <h3>Selected HPO Terms</h3>
-                        <span class="count-badge" id="selectedCount">0 terms</span>
+                        <h3 id="selected-terms-heading">Selected HPO Terms</h3>
+                        <span class="count-badge" id="selectedCount" aria-live="polite">0 terms</span>
                     </div>
                     <div class="selected-container">
-                        <ul class="selected-list" id="selectedList">
+                        <ul class="selected-list" id="selectedList" role="list">
                             <li class="empty-state">
-                                <i class="fas fa-clipboard-list"></i>
-                                <p>No terms selected yet</p>
-                                <p>Select terms from the search results</p>
+                                <i class="fas fa-clipboard-list" aria-hidden="true"></i>
+                                <p>No terms selected yet.</p>
+                                <p>Select terms from the search results.</p>
                             </li>
                         </ul>
                     </div>
-                </div>
+                </section>
             </div>
-            
-            <!-- Action buttons for clearing and exporting selections -->
+
+            <!-- 
+                APPLICATION ACTIONS
+                Clear and export functionality for selected terms
+            -->
             <div class="actions">
                 <button class="btn btn-outline" id="clearBtn">
-                    <i class="fas fa-trash-alt"></i> Clear All
+                    <i class="fas fa-trash-alt" aria-hidden="true"></i> Clear All
                 </button>
                 <button class="btn btn-primary" id="exportBtn" disabled>
-                    <i class="fas fa-file-export"></i> Export to TXT
+                    <i class="fas fa-file-export" aria-hidden="true"></i> Export to TXT
                 </button>
             </div>
-        </div>
-        
-        <!-- Footer -->
-        <footer>
+        </main>
+
+        <!-- 
+            APPLICATION FOOTER
+            Contains attribution and link to source code
+        -->
+        <footer role="contentinfo">
             <p>
                 HPO Portal - Human Phenotype Ontology Search Tool |
                 Made with <i class="fa fa-heartbeat" aria-hidden="true"></i> by Muhammad Ashraf |
@@ -180,7 +224,10 @@
         </footer>
     </div>
 
-    <!-- External JavaScript file for application functionality -->
+    <!-- 
+        APPLICATION SCRIPT
+        Contains all JavaScript functionality for the HPO Portal
+    -->
     <script src="script.js"></script>
 </body>
 </html>

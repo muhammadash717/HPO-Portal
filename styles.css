@@ -466,7 +466,7 @@ footer {
     color: var(--dark);
     margin-bottom: 8px;
     border-bottom: 1px solid var(--border);
-    padding-bottom: 5px;
+    padding-bottom: 2px;
 }
 
 .info-section ul {
@@ -562,6 +562,20 @@ button, .btn, .remove-btn {
 .modal-diseases {
     overflow-y: auto;
 }
+
+.copy-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8em;
+    color: #007bff;
+    transition: color 0.2s ease;
+}
+
+.copy-btn:hover {
+    color: #0056b3;
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 480px) {

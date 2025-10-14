@@ -349,6 +349,35 @@ async function showTermDetails(term) {
                 }
             }
 
+            // Copy genes to clipboard
+            document.getElementById('copyGenesBtn')?.addEventListener('click', () => {
+                const modalGenes = document.getElementById('modalGenes');
+                if (!modalGenes) return;
+
+                // Gather gene names from the displayed chips
+                const genes = Array.from(modalGenes.querySelectorAll('.gene-chip')).map(span => span.textContent.trim());
+                
+                if (genes.length === 0) {
+                    alert('No genes to copy.');
+                    return;
+                }
+
+                const geneList = genes.join(', ');
+                navigator.clipboard.writeText(geneList)
+                    .then(() => {
+                        // Optional: show feedback
+                        const btn = document.getElementById('copyGenesBtn');
+                        const originalHTML = btn.innerHTML;
+                        btn.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => btn.innerHTML = originalHTML, 1200);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy genes:', err);
+                        alert('Failed to copy genes to clipboard.');
+                    });
+            });
+
+
             // populate diseases
             if (modalDiseases) {
                 modalDiseases.innerHTML = '';

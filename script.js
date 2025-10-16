@@ -581,7 +581,7 @@ async function copyGenesToClipboard() {
     }
     
     const genes = Array.from(geneChips).map(chip => chip.textContent.trim());
-    const geneList = genes.join(', ');
+    const geneList = genes.join('||');
     
     try {
         await navigator.clipboard.writeText(geneList);

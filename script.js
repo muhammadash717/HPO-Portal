@@ -166,7 +166,8 @@ const FREQUENT_TERMS = [
     { id: "HP:0003811", name: "Neonatal death"},
     { id: "HP:0200067", name: "Recurrent spontaneous abortion" },
     { id: "HP:0000083", name: "Renal insufficiency" },
-    { id: "HP:0000107", name: "Renal cyst" }
+    { id: "HP:0000107", name: "Renal cyst" },
+    { id: "HP:0002098", name: "Respiratory distress"}
 ];
 
 // Configuration constants

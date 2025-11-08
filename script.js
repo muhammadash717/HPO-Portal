@@ -163,6 +163,7 @@ const FREQUENT_TERMS = [
     { id: "HP:0000789", name: "Infertility" },
     { id: "HP:0000027", name: "Azoospermia" },
     { id: "HP:0034241", name: "Prenatal death" },
+    { id: "HP:0003811", name: "Neonatal death"},
     { id: "HP:0200067", name: "Recurrent spontaneous abortion" },
     { id: "HP:0000083", name: "Renal insufficiency" },
     { id: "HP:0000107", name: "Renal cyst" }

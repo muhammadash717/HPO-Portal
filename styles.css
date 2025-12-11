@@ -238,6 +238,21 @@ footer a:hover {
    SEARCH SECTION STYLES
    ========================================================================== */
 
+.sample-id-container {
+    display: flex;
+    justify-content: center;
+}
+
+#sample_id {
+    width: 40%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: 2px solid var(--border);
+    border-radius: var(--border-radius-lg);
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-lg);
+    transition: all var(--transition-base);
+}
+
 .search-section {
     display: flex;
     flex-direction: column;

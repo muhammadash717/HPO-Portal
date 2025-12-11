@@ -855,9 +855,13 @@ function exportSelectedTerms() {
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const downloadLink = document.createElement('a');
+
+    const sampleIdInput = document.getElementById('sample_id');
+    const sampleId = sampleIdInput ? sampleIdInput.value.trim() : '';
+    const fileName = sampleId ? `${sampleId}.hpo` : 'HPO_terms.txt';
     
     downloadLink.href = url;
-    downloadLink.download = 'HPO_terms.txt';
+    downloadLink.download = fileName;
     document.body.appendChild(downloadLink);
     downloadLink.click();
     

@@ -849,8 +849,8 @@ function exportSelectedTerms() {
     if (AppState.selectedTerms.length === 0) return;
     
     const content = AppState.selectedTerms
-        .map(term => `${term.name}\t${term.id}\n`)
-        .join('');
+        .map(term => `${term.name}\t${term.id}`)
+        .join('\n');
     
     const blob = new Blob([content], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);

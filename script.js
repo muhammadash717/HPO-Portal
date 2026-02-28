@@ -419,6 +419,16 @@ function parseSynonyms(synonyms) {
  * Initialize loading states for modal sections
  */
 function initializeModalLoadingStates() {
+    // reset count displays
+    const geneCountSpan = document.getElementById('genes-count');
+    const diseaseCountSpan = document.getElementById('diseases-count');
+    const parentsCountSpan = document.getElementById('parents-count');
+    const childrenCountSpan = document.getElementById('children-count');
+    if (geneCountSpan) geneCountSpan.textContent = '(0)';
+    if (diseaseCountSpan) diseaseCountSpan.textContent = '(0)';
+    if (parentsCountSpan) parentsCountSpan.textContent = '(0)';
+    if (childrenCountSpan) childrenCountSpan.textContent = '(0)';
+
     const loadingConfig = [
         { element: DOM.modal.parents, text: 'Loading parent terms...' },
         { element: DOM.modal.children, text: 'Loading child terms...' },
@@ -440,6 +450,7 @@ async function loadModalAnnotations(hpId) {
         const annotations = await fetchJAXAnnotations(hpId);
         updateModalWithAnnotations(annotations);
         setupGeneCopyFunctionality();
+        setupDiseaseCopyFunctionality();
     } catch (error) {
         console.warn('Error loading JAX annotations:', error);
         showModalErrorState();
@@ -466,6 +477,13 @@ function updateModalWithAnnotations(annotations) {
 function updateModalRelationshipList(container, items, type) {
     if (!container) return;
     
+    // update corresponding count span
+    let countSpanId = '';
+    if (type === 'parent') countSpanId = 'parents-count';
+    if (type === 'child') countSpanId = 'children-count';
+    const countSpan = countSpanId ? document.getElementById(countSpanId) : null;
+    if (countSpan) countSpan.textContent = `(${items.length})`;
+
     container.innerHTML = '';
     
     if (items.length === 0) {
@@ -522,6 +540,10 @@ function createActionButton(iconName, onClick) {
  */
 function updateModalGenesList(genes) {
     if (!DOM.modal.genes) return;
+
+    // update count span
+    const countSpan = document.getElementById('genes-count');
+    if (countSpan) countSpan.textContent = `(${genes.length})`;
     
     DOM.modal.genes.innerHTML = '';
     
@@ -543,7 +565,11 @@ function updateModalGenesList(genes) {
  */
 function updateModalDiseasesList(diseases) {
     if (!DOM.modal.diseases) return;
-    
+
+    // update count span
+    const countSpan = document.getElementById('diseases-count');
+    if (countSpan) countSpan.textContent = `(${diseases.length})`;
+
     DOM.modal.diseases.innerHTML = '';
     
     if (diseases.length > 0) {
@@ -555,6 +581,9 @@ function updateModalDiseasesList(diseases) {
     } else {
         DOM.modal.diseases.innerHTML = '<li>No associated diseases found</li>';
     }
+    
+    // ensure copy button is wired even if there are 0 items
+    setupDiseaseCopyFunctionality();
 }
 
 /**
@@ -599,6 +628,56 @@ async function copyGenesToClipboard() {
  */
 function showCopySuccessFeedback() {
     const button = document.getElementById('copyGenesBtn');
+    const originalHTML = button.innerHTML;
+    
+    button.innerHTML = '<i class="fas fa-check"></i>';
+    
+    setTimeout(() => {
+        button.innerHTML = originalHTML;
+    }, 1200);
+}
+
+/**
+ * Set up disease copy functionality
+ */
+function setupDiseaseCopyFunctionality() {
+    const copyButton = document.getElementById('copyDiseasesBtn');
+    if (!copyButton) return;
+    
+    // replace to remove old listeners
+    const newButton = copyButton.cloneNode(true);
+    copyButton.parentNode.replaceChild(newButton, copyButton);
+    
+    newButton.addEventListener('click', copyDiseasesToClipboard);
+}
+
+/**
+ * Copy diseases to clipboard from modal
+ */
+async function copyDiseasesToClipboard() {
+    const diseaseItems = DOM.modal.diseases?.querySelectorAll('li');
+    if (!diseaseItems || diseaseItems.length === 0) {
+        alert('No diseases to copy.');
+        return;
+    }
+    
+    const diseases = Array.from(diseaseItems).map(li => li.textContent.trim());
+    const diseaseList = diseases.join('\n');
+    
+    try {
+        await navigator.clipboard.writeText(diseaseList);
+        showDiseaseCopySuccessFeedback();
+    } catch (error) {
+        console.error('Failed to copy diseases:', error);
+        alert('Failed to copy diseases to clipboard.');
+    }
+}
+
+/**
+ * Show success feedback for disease copy
+ */
+function showDiseaseCopySuccessFeedback() {
+    const button = document.getElementById('copyDiseasesBtn');
     const originalHTML = button.innerHTML;
     
     button.innerHTML = '<i class="fas fa-check"></i>';
@@ -922,6 +1001,14 @@ function updateResultsUI(state) {
 function showModalNoDataState() {
     if (DOM.modal.genes) DOM.modal.genes.innerHTML = '<em>No HP ID available</em>';
     if (DOM.modal.diseases) DOM.modal.diseases.innerHTML = '<li><em>No HP ID available</em></li>';
+    const geneCountSpan = document.getElementById('genes-count');
+    const diseaseCountSpan = document.getElementById('diseases-count');
+    const parentsCountSpan = document.getElementById('parents-count');
+    const childrenCountSpan = document.getElementById('children-count');
+    if (geneCountSpan) geneCountSpan.textContent = '(0)';
+    if (diseaseCountSpan) diseaseCountSpan.textContent = '(0)';
+    if (parentsCountSpan) parentsCountSpan.textContent = '(0)';
+    if (childrenCountSpan) childrenCountSpan.textContent = '(0)';
 }
 
 /**
@@ -930,6 +1017,14 @@ function showModalNoDataState() {
 function showModalErrorState() {
     if (DOM.modal.genes) DOM.modal.genes.innerHTML = '<em>Unable to load genes</em>';
     if (DOM.modal.diseases) DOM.modal.diseases.innerHTML = '<li><em>Unable to load diseases</em></li>';
+    const geneCountSpan = document.getElementById('genes-count');
+    const diseaseCountSpan = document.getElementById('diseases-count');
+    const parentsCountSpan = document.getElementById('parents-count');
+    const childrenCountSpan = document.getElementById('children-count');
+    if (geneCountSpan) geneCountSpan.textContent = '(0)';
+    if (diseaseCountSpan) diseaseCountSpan.textContent = '(0)';
+    if (parentsCountSpan) parentsCountSpan.textContent = '(0)';
+    if (childrenCountSpan) childrenCountSpan.textContent = '(0)';
 }
 
 // =============================================================================

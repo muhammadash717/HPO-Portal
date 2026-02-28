@@ -238,6 +238,28 @@ footer a:hover {
    SEARCH SECTION STYLES
    ========================================================================== */
 
+/* header count display next to gene/disease titles */
+.info-section h4 span {
+    font-weight: normal;
+    font-size: 0.9em;
+    margin-right: 0.3rem;
+    color: var(--gray);
+}
+
+.copy-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: var(--spacing-sm);
+    cursor: pointer;
+    color: var(--gray);
+}
+.copy-btn:hover {
+    color: var(--primary-dark);
+}
+
+
+
 .sample-id-container {
     display: flex;
     justify-content: center;
@@ -576,7 +598,7 @@ footer a:hover {
 }
 
 .modal-header {
-    padding: var(--spacing-lg) var(--spacing-xl);
+    padding: var(--spacing-md) var(--spacing-lg);
     background: var(--primary);
     color: white;
     border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;

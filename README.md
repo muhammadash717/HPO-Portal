@@ -2,7 +2,8 @@
 
 **HPO Portal** is a lightweight, client‑side web application designed for clinicians, researchers, and geneticists who need quick access to the Human Phenotype Ontology (HPO). It aggregates live data from NIH and JAX APIs to deliver term definitions, hierarchical relationships, associated genes and diseases, and more – all within a responsive and accessible interface.
 
-🌐 **Access Link:** https://hpo-portal.netlify.app
+🌐 **Access Link 1:** https://hpo-portal.muhammadash717.workers.dev/
+🌐 **Access Link 2:** https://hpo-portal.netlify.app
 
 ---
 

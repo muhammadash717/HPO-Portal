@@ -80,7 +80,7 @@
 
     /* Panel sizing (search results + selection stay visually matched) */
     --panel-min: 320px;
-    --panel-max: max(320px, 52vh);
+    --panel-max: 320px;
     --control-height: 56px;
 }
 

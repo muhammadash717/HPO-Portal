@@ -4,63 +4,78 @@
     <!--
         HPO Portal - Human Phenotype Ontology Search Tool
         Enhanced HTML Structure with Semantic Markup and Accessibility Features
-        
+
         @author Muhammad Ashraf
-        @version 1.1
+        @version 1.2
         @license MIT
     -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Search tool for the Human Phenotype Ontology (HPO) database">
     <meta name="author" content="Muhammad Ashraf">
-    
+    <meta name="theme-color" content="#1d3557">
+
     <title>HPO Portal - Human Phenotype Ontology Search Tool</title>
-    
+
     <!-- External Dependencies -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- 
+    <!--
         MAIN APPLICATION CONTAINER
         Contains all application components in a centered, responsive layout
     -->
     <div class="container">
-        <!-- 
+        <!--
             APPLICATION HEADER
             Contains title and brief description of the tool
         -->
         <header role="banner">
-            <h1><i class="fas fa-dna" aria-hidden="true"></i> HPO Portal</h1>
+            <h1><i class="fas fa-dna" aria-hidden="true"></i> HPO Portal <i class="fas fa-dna" aria-hidden="true"></i></h1>
             <p>Search tool for the Human Phenotype Ontology (HPO) database.</p>
         </header>
 
-        <!-- 
+        <!--
             USER INSTRUCTIONS SECTION
-            Provides clear guidance on how to use the application
+            Provides clear guidance on how to use the application.
+            Wrapped in a native <details> element (open by default) so it can
+            be collapsed to bring the tool higher on the page - no JS needed.
         -->
         <section class="instructions" aria-labelledby="instructions-heading">
-            <h3 id="instructions-heading"><i class="fas fa-info-circle" aria-hidden="true"></i> How to Use This Tool</h3>
-            <ul>
-                <li>Start typing in the search box to find HPO terms.</li>
-                <li><strong>Click</strong> on the <i class="fas fa-info-circle" aria-hidden="true"></i> icon to get more information.</li>
-                <li><strong>Click</strong> on a term to add it to your selection.</li>
-                <li>Remove terms using the trash icon.</li>
-                <li>Export your selection as a text file.</li>
-                <li>All data is fetched in real-time from the HPO database.</li>
-            </ul>
+            <details open>
+                <summary>
+                    <h3 id="instructions-heading"><i class="fa-solid fa-circle-info" aria-hidden="true"></i> How to Use This Tool</h3>
+                </summary>
+                <ul>
+                    <li>1. Start searching to find HPO terms.</li>
+                    <li>2. <strong>Click</strong> on the <i class="fas fa-info-circle" aria-hidden="true"></i> for more information.</li>
+                    <li>3. <strong>Click</strong> on the <i class="fas fa-plus-circle" aria-hidden="true"></i> to add it to your list.</li>
+                    <li>4. Remove terms using the trash icon.</li>
+                    <li>5. Insert sample name for file output.</li>
+                    <li>6. Export your selection as a text file.</li>
+                </ul>
+            </details>
         </section>
 
-        <!-- 
+        <!--
             FREQUENTLY USED TERMS SECTION
-            Quick access to commonly searched HPO terms
+            Quick access to commonly searched HPO terms, grouped by organ system.
+            Collapsible; script.js starts it collapsed on small screens.
         -->
         <section class="favorites" aria-labelledby="favorites-heading">
-            <h2 id="favorites-heading">Frequently Used Terms</h2>
-            <ul id="favorites-list" role="list"></ul>
+            <details open>
+                <summary>
+                    <h2 id="favorites-heading"><i class="fa-solid fa-star" aria-hidden="true"></i> Frequently Used Terms</h2>
+                </summary>
+                <ul id="favorites-list" role="list"></ul>
+            </details>
         </section>
 
-        <!-- 
+        <!--
             TERM DETAILS MODAL DIALOG
             Displays comprehensive information about selected HPO terms
             Hidden by default and shown via JavaScript
@@ -72,14 +87,14 @@
                     <h2 id="modal-title">HPO Term Details</h2>
                     <button class="close" aria-label="Close modal">&times;</button>
                 </div>
-                
+
                 <!-- Modal Body - Term Information Sections -->
                 <div class="modal-body">
                     <div class="term-info">
                         <!-- Basic Term Information -->
                         <h3 id="modalTermName"></h3>
                         <div class="term-id" id="modalTermId"></div>
-                        
+
                         <!-- Definition Section -->
                         <section class="info-section" aria-labelledby="definition-heading">
                             <h4 id="definition-heading">Definition</h4>
@@ -87,13 +102,13 @@
                                 No definition available.
                             </p>
                         </section>
-                        
+
                         <!-- Synonyms Section -->
                         <section class="info-section" aria-labelledby="synonyms-heading">
                             <h4 id="synonyms-heading">Synonyms</h4>
                             <ul id="modalTermSynonyms" class="modal-synonyms" role="list"></ul>
                         </section>
-                        
+
                         <!-- Parent Terms Section -->
                         <section class="info-section" aria-labelledby="parents-heading">
                             <h4 id="parents-heading">
@@ -103,7 +118,7 @@
                                 <li><em>Loading on demand...</em></li>
                             </ul>
                         </section>
-                        
+
                         <!-- Child Terms Section -->
                         <section class="info-section" aria-labelledby="children-heading">
                             <h4 id="children-heading">
@@ -113,7 +128,7 @@
                                 <li><em>Loading on demand...</em></li>
                             </ul>
                         </section>
-                        
+
                         <!-- Associated Genes Section -->
                         <section class="info-section" aria-labelledby="genes-heading">
                             <h4 id="genes-heading">
@@ -127,7 +142,7 @@
                                 <em>Loading on demand...</em>
                             </div>
                         </section>
-                        
+
                         <!-- Associated Diseases Section -->
                         <section class="info-section" aria-labelledby="diseases-heading">
                             <h4 id="diseases-heading">
@@ -143,7 +158,7 @@
                         </section>
                     </div>
                 </div>
-                
+
                 <!-- Modal Footer - Action Buttons -->
                 <div class="modal-footer">
                     <button id="addFromModal" class="btn btn-primary">
@@ -152,34 +167,36 @@
                 </div>
             </div>
         </div>
-        
-        <!-- 
+
+        <!--
             SAMPLE ID INPUT
             Allows users to specify a sample name for export files
         -->
         <div class="sample-id-container">
-            <input type="text" id="sample_id" placeholder="Sample Name (Optional) ...">
+            <label for="sample_id" class="sr-only">Sample name (optional)</label>
+            <input type="text" id="sample_id" placeholder="Sample Name (Optional) ..." autocomplete="off">
         </div>
-        
-        <!-- 
+
+        <!--
             MAIN APPLICATION CARD
             Contains search functionality and term selection management
         -->
         <main class="app-card" role="main">
             <div class="app-body">
-                <!-- 
+                <!--
                     SEARCH SECTION
                     Contains search input and results display
                 -->
                 <section class="search-section" aria-labelledby="search-results-heading">
                     <div class="search-box">
                         <label for="searchInput" class="sr-only">Search HPO terms</label>
-                        <input type="text" id="searchInput" 
+                        <input type="text" id="searchInput"
                                placeholder="Search Phenotypes (Infertility, Kidney, Cardio, ...)"
-                               aria-describedby="search-instructions">
+                               aria-describedby="search-instructions"
+                               autocomplete="off" spellcheck="false">
                         <i class="fas fa-search search-icon" aria-hidden="true"></i>
                     </div>
-                    
+
                     <div class="results-container">
                         <div class="results-header">
                             <span id="search-results-heading">Search Results</span>
@@ -194,7 +211,7 @@
                     </div>
                 </section>
 
-                <!-- 
+                <!--
                     SELECTION SECTION
                     Manages and displays selected HPO terms
                 -->
@@ -215,7 +232,7 @@
                 </section>
             </div>
 
-            <!-- 
+            <!--
                 APPLICATION ACTIONS
                 Clear and export functionality for selected terms
             -->
@@ -229,7 +246,7 @@
             </div>
         </main>
 
-        <!-- 
+        <!--
             APPLICATION FOOTER
             Contains attribution and link to source code
         -->
@@ -242,7 +259,7 @@
         </footer>
     </div>
 
-    <!-- 
+    <!--
         APPLICATION SCRIPT
         Contains all JavaScript functionality for the HPO Portal
     -->

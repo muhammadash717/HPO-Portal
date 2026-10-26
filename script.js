@@ -150,24 +150,118 @@ const UI_STATES = {
 };
 
 /**
- * Frequently used HPO terms for quick access
- * These are common terms that users might search for regularly
+ * Frequently used HPO terms for quick access, grouped by affected organ system.
+ * These are common terms that users might search for regularly.
+ *
+ * Each group has:
+ *   - system: heading shown on the group card
+ *   - icon:   Font Awesome icon name, without the "fa-" prefix
+ *   - terms:  array of { id, name } objects (same shape as the old flat list)
+ *
+ * Groups follow the HPO top-level categories (checked against hp.obo,
+ * release 2026-09-01). Organ systems come first; the last three groups hold
+ * terms that HPO does not file under an organ system (pregnancy and fetal
+ * findings, age of death, growth and fluid balance). Inside each group the
+ * terms keep the relative order they had in the original flat list.
+ *
+ * Judgment calls where HPO and everyday clinical use differ: Hypotonia is
+ * filed under musculoskeletal in HPO but sits with the nervous system here;
+ * Feeding difficulties (HPO: digestive) sits next to Failure to thrive; and
+ * Intrauterine growth retardation (HPO: growth) sits with the prenatal terms.
+ *
+ * To add a term, add { id, name } to the right group. To add a group, append
+ * a new { system, icon, terms } object.
  */
 const FREQUENT_TERMS = [
-    { id: "HP:0001263", name: "Global developmental delay" },
-    { id: "HP:0001250", name: "Seizure" },
-    { id: "HP:0000256", name: "Macrocephaly" },
-    { id: "HP:0000252", name: "Microcephaly" },
-    { id: "HP:0001252", name: "Hypotonia" },
-    { id: "HP:0001508", name: "Failure to thrive" },
-    { id: "HP:0000789", name: "Infertility" },
-    { id: "HP:0000027", name: "Azoospermia" },
-    { id: "HP:0034241", name: "Prenatal death" },
-    { id: "HP:0003811", name: "Neonatal death"},
-    { id: "HP:0200067", name: "Recurrent spontaneous abortion" },
-    { id: "HP:0000083", name: "Renal insufficiency" },
-    { id: "HP:0000107", name: "Renal cyst" },
-    { id: "HP:0002098", name: "Respiratory distress"}
+    {
+        system: "Appearance",
+        icon: "face-smile",
+        terms: [
+            { id: "HP:0001999", name: "Abnormal facial shape" },
+            { id: "HP:0000252", name: "Microcephaly" },
+            { id: "HP:0001508", name: "Failure to thrive" }
+        ]
+    },
+    {
+        system: "Eye",
+        icon: "eye",
+        terms: [
+            { id: "HP:0000505", name: "Visual impairment" },
+            { id: "HP:0000510", name: "Rod-cone dystrophy" }
+        ]
+    },
+    {
+        system: "Ear",
+        icon: "ear-listen",
+        terms: [
+            { id: "HP:0000365", name: "Hearing impairment" },
+            { id: "HP:0000407", name: "Sensorineural hearing impairment" }
+        ]
+    },
+    {
+        system: "Nervous System",
+        icon: "brain",
+        terms: [
+            { id: "HP:0001263", name: "Global developmental delay" },
+            { id: "HP:0001250", name: "Seizure" },
+            { id: "HP:0001249", name: "Intellectual disability" },
+            { id: "HP:0000750", name: "Delayed speech and language development" },
+            { id: "HP:0001270", name: "Motor delay" },
+            { id: "HP:0002376", name: "Developmental regression" },
+            { id: "HP:0012444", name: "Brain atrophy" },
+            { id: "HP:0000238", name: "Hydrocephalus" },
+            { id: "HP:0002119", name: "Ventriculomegaly" },
+            { id: "HP:0000729", name: "Autistic behavior" },
+            { id: "HP:0000752", name: "Hyperactivity" }
+        ]
+    },
+    {
+        system: "Reproductive",
+        icon: "venus-mars",
+        terms: [
+            { id: "HP:0000789", name: "Infertility" },
+            { id: "HP:0000027", name: "Azoospermia" },
+            { id: "HP:0200067", name: "Recurrent spontaneous abortion" },
+            { id: "HP:0000062", name: "Ambiguous genitalia" },
+            { id: "HP:0034914", name: "Oocyte maturation arrest" }
+        ]
+    },
+    {
+        system: "Prenatal & Fetal",
+        icon: "baby",
+        terms: [
+            { id: "HP:0001511", name: "Intrauterine growth retardation" },
+            { id: "HP:0001562", name: "Oligohydramnios" },
+            { id: "HP:0001789", name: "Hydrops fetalis" },
+            { id: "HP:0034241", name: "Prenatal death" },
+            { id: "HP:0001252", name: "Hypotonia" }
+        ]
+    },
+    {
+        system: "Cardiovascular",
+        icon: "heart",
+        terms: [
+            { id: "HP:0001627", name: "Abnormal heart morphology" },
+            { id: "HP:0001629", name: "Ventricular septal defect" },
+            { id: "HP:0001643", name: "Patent ductus arteriosus" },
+            { id: "HP:0001631", name: "Atrial septal defect" }
+        ]
+    },
+    {
+        system: "Renal",
+        icon: "poop",
+        terms: [
+            { id: "HP:0000083", name: "Renal insufficiency" },
+            { id: "HP:0000107", name: "Renal cyst" }
+        ]
+    },
+    {
+        system: "Respiratory",
+        icon: "lungs",
+        terms: [
+            { id: "HP:0002098", name: "Respiratory distress" }
+        ]
+    }
 ];
 
 // Configuration constants
@@ -890,17 +984,57 @@ async function fetchJAXAnnotations(hpId) {
 // =============================================================================
 
 /**
- * Render frequently used terms in the favorites section
+ * Render frequently used terms in the favorites section,
+ * one group card per organ system
  */
 function renderFrequentTerms() {
     if (!DOM.favorites.list) return;
     
     DOM.favorites.list.innerHTML = '';
     
-    FREQUENT_TERMS.forEach(term => {
-        const listItem = createFavoriteListItem(term);
-        DOM.favorites.list.appendChild(listItem);
+    FREQUENT_TERMS.forEach(group => {
+        const groupItem = createFavoriteGroup(group);
+        DOM.favorites.list.appendChild(groupItem);
     });
+}
+
+/**
+ * Create a group card (heading plus term chips) for one organ system
+ * @param {Object} group - Group object with system, icon and terms
+ * @returns {HTMLLIElement} Configured favorite group list item
+ */
+function createFavoriteGroup(group) {
+    const li = document.createElement('li');
+    li.className = 'favorite-group';
+
+    li.innerHTML = `
+        <h3 class="favorite-group-title">
+            <i class="fas fa-${escapeHTML(group.icon)}" aria-hidden="true"></i>
+            <span class="favorite-group-name">${escapeHTML(group.system)}</span>
+            <span class="favorite-group-count">${group.terms.length}<span class="sr-only"> terms</span></span>
+        </h3>
+        <ul class="favorite-group-list" role="list"></ul>
+    `;
+
+    const termList = li.querySelector('.favorite-group-list');
+    termList.setAttribute('aria-label', `${group.system} terms`);
+
+    group.terms.forEach(term => {
+        termList.appendChild(createFavoriteListItem(term));
+    });
+
+    return li;
+}
+
+/**
+ * Start the favorites panel collapsed on small screens so the search tool
+ * is not pushed far down the page. Users can still expand it.
+ */
+function collapseFavoritesOnSmallScreens() {
+    const panel = DOM.favorites.list ? DOM.favorites.list.closest('details') : null;
+    if (panel && window.matchMedia('(max-width: 768px)').matches) {
+        panel.open = false;
+    }
 }
 
 /**
@@ -911,7 +1045,7 @@ function renderFrequentTerms() {
 function createFavoriteListItem(term) {
     const li = document.createElement('li');
     li.className = 'favorite-item';
-    li.innerHTML = `<span>${escapeHTML(term.name)} (${escapeHTML(term.id)})</span>`;
+    li.innerHTML = `<span>${escapeHTML(term.name)}</span>`; // (${escapeHTML(term.id)})
     li.addEventListener('click', () => addTermToSelection(term));
     
     return li;
@@ -1053,6 +1187,7 @@ function escapeHTML(text) {
 function initializeApplication() {
     initializeEventListeners();
     renderFrequentTerms();
+    collapseFavoritesOnSmallScreens();
     renderSelectionList();
     showEmptySearchState();
     updateExportButtonState();
